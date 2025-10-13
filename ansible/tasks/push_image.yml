@@ -1,0 +1,8 @@
+---
+- name: Tag image for target registry
+  ansible.builtin.shell: |
+    docker tag $(docker images --format '{{'{{.Repository}}:{{.Tag}}'}}' | grep {{ image_name }}) {{ target_registry }}/{{ image_name }}
+
+- name: Push image to target registry
+  ansible.builtin.shell: |
+    docker push {{ target_registry }}/{{ image_name }}

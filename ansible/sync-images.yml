@@ -29,14 +29,8 @@
     - name: Tag and push images to target registry
       loop: "{{ images }}"
       loop_control:
-        label: "{{ item }}"
-      block:
-        - name: Tag image for target registry
-          ansible.builtin.shell: |
-            docker tag $(docker images --format '{{'{{.Repository}}:{{.Tag}}'}}' | grep {{ item }}) {{ target_registry }}/{{ item }}
-        - name: Push image to target registry
-          ansible.builtin.shell: |
-            docker push {{ target_registry }}/{{ item }}
+        loop_var: image_name
+        label: "{{ image_name }}"
 
     - name: Verify each image exists in target registry
       ansible.builtin.shell: |
