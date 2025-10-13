@@ -7,7 +7,7 @@
     - ../ansible/vault.yml
 
   vars:
-    target_registry: "{{ target_registry | default(vault_registry_url) }}"
+    target_registry: "{{ target_registry | default(vault_registry_url, true) }}"
 
   tasks:
     - name: Ensure registry vars are loaded

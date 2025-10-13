@@ -7,7 +7,7 @@
     - ../config/images.yml
 
   vars:
-    target_registry: "{{ target_registry | default(vault_registry_url) }}"
+    target_registry: "{{ target_registry | default(vault_registry_url, true) }}"
     api_url: "https://{{ target_registry }}/v2"
 
   tasks:

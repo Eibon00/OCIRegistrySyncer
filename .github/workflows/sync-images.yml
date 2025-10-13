@@ -102,4 +102,5 @@ jobs:
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           ansible-playbook ansible/verify-images.yml \
+          -e "target_registry=${{ inputs.target_registry }}" \
             --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD")
