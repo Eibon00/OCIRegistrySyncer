@@ -10,12 +10,19 @@
     target_registry: "{{ target_registry | default(vault_registry_url) }}"
 
   tasks:
-    - name: Login to target registry
-      ansible.builtin.shell: |
-        echo "{{ vault_registry_password }}" | docker login "{{ target_registry }}" -u "{{ vault_registry_username }}" --password-stdin
-      register: login_result
-      failed_when: login_result.rc != 0
-      changed_when: "'Login Succeeded' in login_result.stdout"
+    - name: Ensure registry vars are loaded
+      ansible.builtin.debug:
+        msg:
+          - "Target registry: {{ target_registry }}"
+          - "Auth mode: Basic"
+          - "Vault user: {{ vault_registry_username | default('undefined') }}"
+
+    - name: Login to target registry using Basic Auth
+      community.docker.docker_login:
+        registry_url: "{{ target_registry }}"
+        username: "{{ vault_registry_username }}"
+        password: "{{ vault_registry_password }}"
+        reauthorize: yes
 
     - name: Pull each image from ghcr.io or docker.io
       ansible.builtin.shell: |
@@ -43,4 +50,6 @@
         label: "{{ item }}"
 
     - name: Logout from target registry
-      ansible.builtin.shell: docker logout {{ target_registry }}
+      community.docker.docker_login:
+        registry_url: "{{ target_registry }}"
+        state: absent

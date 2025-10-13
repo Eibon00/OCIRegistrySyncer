@@ -16,23 +16,22 @@
         success_count: 0
         failure_count: 0
 
-    - name: Verify each image using Registry API
+    - name: Verify each image via HTTP API (Basic Auth)
       vars:
         image_name: "{{ item.split(':')[0] }}"
         image_tag: "{{ item.split(':')[1] }}"
       ansible.builtin.uri:
-        url: "{{ api_url }}/{{ image_name }}/manifests/{{ image_tag }}"
+        url: "https://{{ vault_registry_url }}/v2/{{ image_name }}/manifests/{{ image_tag }}"
+        method: GET
         user: "{{ vault_registry_username }}"
         password: "{{ vault_registry_password }}"
-        method: GET
         force_basic_auth: yes
+        validate_certs: no
         headers:
           Accept: "application/vnd.docker.distribution.manifest.v2+json"
-        return_content: no
         status_code: [200]
-        validate_certs: no
       register: verify_result
-      failed_when: verify_result.status not in [200]
+      failed_when: verify_result.status != 200
       ignore_errors: yes
       loop: "{{ images }}"
       loop_control:
