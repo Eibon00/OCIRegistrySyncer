@@ -7,11 +7,18 @@
     - ../config/images.yml
 
   vars:
-    target_registry: >-
-      {{ (target_registry | trim) | ternary(target_registry, vault_registry_url) }}
+    _input_target_registry: "{{ target_registry | default('') }}"
     api_url: "https://{{ target_registry }}/v2"
 
   tasks:
+    - name: Set actual target_registry
+      set_fact:
+        target_registry: >-
+          {{ 
+            (_input_target_registry | trim) 
+            | ternary(_input_target_registry, vault_registry_url) 
+          }}
+
     - name: Initialize counters
       set_fact:
         success_count: 0
