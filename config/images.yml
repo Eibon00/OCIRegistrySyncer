@@ -1,3 +1,7 @@
 images:
   - nginx:latest
-  - alpine:3.18
+  - alpine:latest
+  - registry:latest
+  - minio/minio:latest
+  - archlinux:latest
+  - joxit/docker-registry-ui:main
