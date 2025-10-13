@@ -12,7 +12,7 @@
   tasks:
     - name: Debug vault vars
       ansible.builtin.debug:
-      var: vault_registry_url
+        var: vault_registry_url
 
     - name: Ensure registry vars are loaded
       ansible.builtin.debug:
