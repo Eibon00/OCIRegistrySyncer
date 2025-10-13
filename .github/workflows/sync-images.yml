@@ -40,7 +40,7 @@ jobs:
 
       - name: Setup Ansible
         id: ansible
-        uses: rishabhc32/install-ansible@v1
+        uses: rishabhc32/install-ansible@v1.2.2
         with:
           python-version: "3.12"
           ansible-package: "ansible==12.0.0"
@@ -92,7 +92,7 @@ jobs:
 
       - name: Setup Ansible
         id: ansible
-        uses: rishabhc32/install-ansible@v1
+        uses: rishabhc32/install-ansible@v1.2.2
         with:
           python-version: "3.12"
           ansible-package: "ansible==12.0.0"
