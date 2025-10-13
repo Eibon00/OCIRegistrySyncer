@@ -45,7 +45,7 @@ jobs:
           python-version: "3.12"
           ansible-package: "ansible==12.0.0"
 
-      - name: Check if DOCKERHUB credentials are set
+      - name: Check if DockerHub credentials are set
         id: dockerhub-check
         run: |
           if [ -z "${{secrets.DOCKERHUB_USERNAME}}" ] && [ -z "${{secrets.DOCKERHUB_PASSWORD}}" ]; then
@@ -55,7 +55,7 @@ jobs:
           fi
 
       - name: Login to DockeHub (optional)
-        if: ${{ steps.dockerhub-check.outputs.dockerhub_set }} == 'true'
+        if: ${{ steps.dockerhub-check.outputs.dockerhub_set == 'true' }}
         uses: docker/login-action@v2
         with:
           registry: docker.io
