@@ -27,6 +27,7 @@
       failed_when: pull_results.rc != 0
 
     - name: Tag and push images to target registry
+      include_tasks: tasks/push_image.yml
       loop: "{{ images }}"
       loop_control:
         loop_var: image_name
