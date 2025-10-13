@@ -1,0 +1,3 @@
+images:
+  - nginx:latest
+  - alpine:3.18

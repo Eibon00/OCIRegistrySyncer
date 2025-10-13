@@ -1,0 +1,51 @@
+---
+- name: Sync container images from ghcr or Docker Hub
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../config/images.yml
+    - ../ansible/vault.yml
+
+  vars:
+    target_registry: "{{ target_registry | default(vault_registry_url) }}"
+
+  tasks:
+    - name: Login to target registry
+      ansible.builtin.shell: |
+        echo "{{ vault_registry_password }}" | docker login "{{ target_registry }}" -u "{{ vault_registry_username }}" --password-stdin
+      register: login_result
+      failed_when: login_result.rc != 0
+      changed_when: "'Login Succeeded' in login_result.stdout"
+
+    - name: Pull each image from ghcr.io or docker.io
+      ansible.builtin.shell: |
+        docker pull ghcr.io/{{ item }} || docker pull docker.io/{{ item }}
+      loop: "{{ images }}"
+      loop_control:
+        label: "{{ item }}"
+      register: pull_results
+      failed_when: pull_results.rc != 0
+
+    - name: Tag and push images to target registry
+      loop: "{{ images }}"
+      loop_control:
+        label: "{{ item }}"
+      block:
+        - name: Tag image for target registry
+          ansible.builtin.shell: |
+            docker tag $(docker images --format '{{'{{.Repository}}:{{.Tag}}'}}' | grep {{ item }}) {{ target_registry }}/{{ item }}
+        - name: Push image to target registry
+          ansible.builtin.shell: |
+            docker push {{ target_registry }}/{{ item }}
+
+    - name: Verify each image exists in target registry
+      ansible.builtin.shell: |
+        docker manifest inspect {{ target_registry }}/{{ item }} > /dev/null
+      register: verify_result
+      failed_when: verify_result.rc != 0
+      loop: "{{ images }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Logout from target registry
+      ansible.builtin.shell: docker logout {{ target_registry }}
