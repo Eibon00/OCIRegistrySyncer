@@ -1,20 +1,16 @@
 ---
-- name: Tag and push image with retry
-  hosts: all
-  become: true
-  tasks:
-    - name: Tag image for target registry
-      ansible.builtin.shell: |
-        docker tag $(docker images --format '{{"{{.Repository}}:{{.Tag}}"}}' | grep {{ image_name }}) {{ real_target_registry }}/{{ image_name }}
-      register: tag_result
-      retries: 3 # 尝试次数
-      delay: 5 # 每次重试间隔（秒）
-      until: tag_result.rc == 0
+- name: Tag image for target registry
+  ansible.builtin.shell: |
+    docker tag $(docker images --format '{{"{{.Repository}}:{{.Tag}}"}}' | grep {{ image_name }}) {{ real_target_registry }}/{{ image_name }}
+  register: tag_result
+  retries: 3
+  delay: 5
+  until: tag_result.rc == 0
 
-    - name: Push image to target registry
-      ansible.builtin.shell: |
-        docker push {{ real_target_registry }}/{{ image_name }}
-      register: push_result
-      retries: 5 # 尝试次数（推送容易网络波动，可多些）
-      delay: 10 # 每次重试间隔（秒）
-      until: push_result.rc == 0
+- name: Push image to target registry
+  ansible.builtin.shell: |
+    docker push {{ real_target_registry }}/{{ image_name }}
+  register: push_result
+  retries: 5
+  delay: 10
+  until: push_result.rc == 0
