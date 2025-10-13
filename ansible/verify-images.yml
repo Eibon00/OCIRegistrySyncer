@@ -17,7 +17,6 @@
             (_input_target_registry | trim) 
             | ternary(_input_target_registry, vault_registry_url) 
           }}
-        api_url: "https://{{ real_target_registry }}/v2"
 
     - name: Initialize counters
       set_fact:
@@ -52,9 +51,9 @@
 
     - name: Show verification summary
       ansible.builtin.debug:
-        msg: |
-          成功镜像数: {{ success_count }}
-          失败镜像数: {{ failure_count }}
+        var:
+          成功镜像数: "{{ success_count }}"
+          失败镜像数: "{{ failure_count }}"
 
     - name: Fail if there are any failed verifications
       ansible.builtin.fail:
