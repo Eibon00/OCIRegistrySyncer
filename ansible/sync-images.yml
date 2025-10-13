@@ -7,13 +7,10 @@
     - ../ansible/vault.yml
 
   vars:
-    target_registry: "{{ target_registry | default(vault_registry_url, true) }}"
+    target_registry: >-
+      {{ (target_registry | trim) | ternary(target_registry, vault_registry_url) }}
 
   tasks:
-    - name: Debug vault vars
-      ansible.builtin.debug:
-        var: vault_registry_url
-
     - name: Ensure registry vars are loaded
       ansible.builtin.debug:
         msg:
