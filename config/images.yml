@@ -5,3 +5,4 @@ images:
   - minio/minio:latest
   - archlinux:latest
   - joxit/docker-registry-ui:main
+  - rzrbld/adminio-ui:latest
