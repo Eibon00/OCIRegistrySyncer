@@ -14,15 +14,15 @@ images:
   - ghcr.io/fatedier/frps:v0.65.0
   - grafana/grafana
   - prom/prometheus:main
-  - docker.io/jitsi/base:stable
-  - docker.io/jitsi/base-java:stable
-  - docker.io/jitsi/prosody:stable
-  - docker.io/jitsi/jicofo:stable
-  - docker.io/jitsi/jvb:stable
-  - docker.io/jitsi/web:stable
-  - docker.io/jitsi/jigasi:stable
-  - docker.io/jitsi/jibri:stable
-  - docker.io/jitsi/jitsi-multitrack-recorder
+  - jitsi/base:stable
+  - jitsi/base-java:stable
+  - jitsi/prosody:stable
+  - jitsi/jicofo:stable
+  - jitsi/jvb:stable
+  - jitsi/web:stable
+  - jitsi/jigasi:stable
+  - jitsi/jibri:stable
+  - jitsi/jitsi-multitrack-recorder
   - grafana/loki
   - mlikiowa/napcat-docker:latest
   - binwiederhier/ntfy
@@ -39,3 +39,4 @@ images:
   - ghcr.io/bitwarden/self-host:latest
   - linuxserver/jellyfin
   - ghcr.io/element-hq/element-call:latest-ci
+  - louislam/uptime-kuma
