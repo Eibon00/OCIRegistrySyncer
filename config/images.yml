@@ -6,3 +6,36 @@ images:
   - archlinux:latest
   - joxit/docker-registry-ui:main
   - rzrbld/adminio-ui:latest
+  - docker.getoutline.com/outlinewiki/outline:latest
+  - postgres:18
+  - matrixdotorg/synapse:latest
+  - matrixdotorg/sygnal:latest
+  - linuxserver/qbittorrent:5.1.2
+  - ghcr.io/fatedier/frps:v0.65.0
+  - grafana/grafana
+  - prom/prometheus:main
+  - docker.io/jitsi/base:stable
+  - docker.io/jitsi/base-java:stable
+  - docker.io/jitsi/prosody:stable
+  - docker.io/jitsi/jicofo:stable
+  - docker.io/jitsi/jvb:stable
+  - docker.io/jitsi/web:stable
+  - docker.io/jitsi/jigasi:stable
+  - docker.io/jitsi/jibri:stable
+  - docker.io/jitsi/jitsi-multitrack-recorder
+  - grafana/loki
+  - mlikiowa/napcat-docker:latest
+  - binwiederhier/ntfy
+  - line/promgen
+  - rustdesk/rustdesk-server
+  - ghcr.io/sillytavern/sillytavern
+  - docker.gitea.com/gitea:latest
+  - keycloak/keycloak
+  - netbirdio/netbird:latest
+  - nixos/nix
+  - sigoden/dufs
+  - openlistteam/openlist:latest
+  - triliumnext/trilium:main
+  - ghcr.io/bitwarden/self-host:latest
+  - linuxserver/jellyfin
+  - ghcr.io/element-hq/element-call:latest-ci
