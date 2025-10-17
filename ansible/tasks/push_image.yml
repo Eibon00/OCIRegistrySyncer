@@ -1,4 +1,8 @@
 ---
+- name: pre-processing image names
+  ansible.builtin.set_fact:
+    image_name: "{{ image_name | regex_replace('^docker.io/', '') | regex_replace('^ghcr.io/', '') }}"
+
 - name: Tag image for target registry
   ansible.builtin.shell: |
     docker tag $(docker images --format '{{"{{.Repository}}:{{.Tag}}"}}' | grep {{ image_name }}) {{ real_target_registry }}/{{ image_name }}

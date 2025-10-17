@@ -34,14 +34,26 @@
 
     - name: Pull each image from ghcr.io or docker.io
       ansible.builtin.shell: |
-        # docker pull ghcr.io/{{ item }} || docker pull docker.io/{{ item }}
-        # [patch] remove ghcr.io fallback
-        docker pull docker.io/{{ item }}
+        if [[ "{{ item }}" == */* ]]; then
+          docker pull {{ item }}
+        else
+          docker pull docker.io/{{ item }} || docker pull ghcr.io/{{ item }}
+        fi
       loop: "{{ images }}"
       loop_control:
         label: "{{ item }}"
       register: pull_results
-      failed_when: pull_results.rc != 0
+      changed_when: pull_results.rc != 0
+      ignore_errors: yes
+      failed_when: false
+
+    - name: Print failed pulls
+      ansible.builtin.debug:
+        msg: "Pull failed for: {{ item.item }} (Exit code: {{ item.rc }})"
+      loop: "{{ pull_results.results }}"
+      when: item.rc != 0
+      loop_control:
+        label: "{{ item.item }}"
 
     - name: Tag and push images to target registry
       include_tasks: tasks/push_image.yml
