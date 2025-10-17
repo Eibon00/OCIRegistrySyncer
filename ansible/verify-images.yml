@@ -52,12 +52,8 @@
     - name: Show verification summary
       ansible.builtin.debug:
         msg: |
-          ==============================
-          镜像同步结果 Summary
-          ==============================
-          成功镜像数 : {{ success_count }}
-          失败镜像数 : {{ failure_count }}
-          ==============================
+          Succeed images count : {{ success_count }}
+          Failed images count : {{ failure_count }}
 
     - name: Fail if there are any failed verifications
       ansible.builtin.fail:

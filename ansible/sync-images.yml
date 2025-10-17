@@ -23,7 +23,7 @@
         msg:
           - "Target registry: {{ real_target_registry }}"
           - "Auth mode: Basic"
-          - "Vault user: {{ vault_registry_username | default('undefined') }}"
+          # - "Vault user: {{ vault_registry_username | default('undefined') }}"
 
     - name: Login to target registry using Basic Auth
       community.docker.docker_login:
@@ -34,7 +34,9 @@
 
     - name: Pull each image from ghcr.io or docker.io
       ansible.builtin.shell: |
-        docker pull ghcr.io/{{ item }} || docker pull docker.io/{{ item }}
+        # docker pull ghcr.io/{{ item }} || docker pull docker.io/{{ item }}
+        # [patch] remove ghcr.io fallback
+        docker pull docker.io/{{ item }}
       loop: "{{ images }}"
       loop_control:
         label: "{{ item }}"
