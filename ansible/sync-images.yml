@@ -10,6 +10,14 @@
   vars:
     _input_target_registry: "{{ target_registry | default('') }}"
 
+  handlers:
+    - name: Restart Docker
+      ansible.builtin.systemd:
+        name: docker
+        state: restarted
+        enabled: yes
+      when: not ansible_check_mode
+
   tasks:
     - name: Set actual target_registry
       set_fact:
@@ -43,13 +51,6 @@
           }
         mode: "0644"
       notify: Restart Docker
-
-    - name: Restart Docker
-      ansible.builtin.systemd:
-        name: docker
-        state: restarted
-        enabled: yes
-      when: not ansible_check_mode
 
     - name: Login to target registry using Basic Auth
       community.docker.docker_login:
