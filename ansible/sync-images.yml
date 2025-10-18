@@ -12,16 +12,17 @@
   tasks:
     - name: Set actual target_registry
       set_fact:
-        real_target_registry: >-
+        registry_host: >-
           {{ 
             (_input_target_registry | trim) 
             | ternary(_input_target_registry, vault_registry_url) 
+            | regex_replace('^.+://', '')
           }}
 
     - name: Ensure registry vars are loaded
       ansible.builtin.debug:
         msg:
-          - "Target registry: {{ real_target_registry }}"
+          - "Target registry: {{ registry_host }}"
           - "Auth mode: Basic"
           # - "Vault user: {{ vault_registry_username | default('undefined') }}"
 
@@ -30,9 +31,26 @@
         msg: "Trying to setup Yggdrasil connectivity..."
       include_tasks: tasks/setup_yggdrasil.yml
 
+    - name: Configure insecure registry
+      ansible.builtin.ini_file:
+        path: /etc/docker/daemon.json
+        section: ""
+        option_value:
+          insecure-registries: ["{{ registry_host }}"]
+        create: yes
+        mode: 0644
+      notify: Restart Docker
+
+    - name: Restart Docker
+      ansible.builtin.systemd:
+        name: docker
+        state: restarted
+        enabled: yes
+      when: not ansible_check_mode
+
     - name: Login to target registry using Basic Auth
       community.docker.docker_login:
-        registry_url: "{{ real_target_registry }}"
+        registry_url: "{{ registry_host }}"
         username: "{{ vault_registry_username }}"
         password: "{{ vault_registry_password }}"
         reauthorize: yes
@@ -69,7 +87,7 @@
 
     - name: Verify each image exists in target registry
       ansible.builtin.shell: |
-        docker manifest inspect {{ real_target_registry }}/{{ item }} > /dev/null
+        docker manifest inspect {{ registry_host }}/{{ item }} > /dev/null
       register: verify_result
       failed_when: verify_result.rc != 0
       loop: "{{ images }}"
@@ -78,5 +96,5 @@
 
     - name: Logout from target registry
       community.docker.docker_login:
-        registry_url: "{{ real_target_registry }}"
+        registry_url: "{{ registry_host }}"
         state: absent

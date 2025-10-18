@@ -5,7 +5,9 @@
 
 - name: Tag image for target registry
   ansible.builtin.shell: |
-    docker tag $(docker images --format '{{"{{.Repository}}:{{.Tag}}"}}' | grep {{ image_name }}) {{ real_target_registry }}/{{ image_name }}
+    docker tag \
+    $(docker images --format '{{"{{.Repository}}:{{.Tag}}"}}' | grep {{ image_name }}) \
+    {{ registry_host }}/{{ image_name }}
   register: tag_result
   retries: 3
   delay: 5
@@ -13,8 +15,12 @@
 
 - name: Push image to target registry
   ansible.builtin.shell: |
-    docker push {{ real_target_registry }}/{{ image_name }}
+    docker push {{ registry_host }}/{{ image_name }}
   register: push_result
   retries: 5
   delay: 10
   until: push_result.rc == 0
+# - name: Debug Push result
+#   ansible.builtin.debug:
+#     msg: "Successfully pushed {{ registry_host }}/{{ image_name }}"
+#   when: push_result is succeeded

@@ -12,10 +12,11 @@
   tasks:
     - name: Set actual target_registry
       set_fact:
-        real_target_registry: >-
+        registry_host: >-
           {{ 
             (_input_target_registry | trim) 
             | ternary(_input_target_registry, vault_registry_url) 
+            | regex_replace('^.+://', '')
           }}
 
     - name: Install and config Yggdrasil
@@ -33,7 +34,7 @@
         image_name: "{{ item.split(':')[0] }}"
         image_tag: "{{ item.split(':')[1] }}"
       ansible.builtin.uri:
-        url: "https://{{ vault_registry_url }}/v2/{{ image_name }}/manifests/{{ image_tag }}"
+        url: "https://{{ registry_host }}/v2/{{ image_name }}/manifests/{{ image_tag }}"
         method: GET
         user: "{{ vault_registry_username }}"
         password: "{{ vault_registry_password }}"
