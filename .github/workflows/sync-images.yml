@@ -41,7 +41,6 @@ jobs:
           daemon-config: |
             {
               "experimental": true,
-              "insecure-registries": ["${{ github.event.inputs.target_registry }}"],
               "features": {
                 "buildkit": true
               }
