@@ -2,6 +2,7 @@
 - name: Sync container images from ghcr or Docker Hub
   hosts: localhost
   gather_facts: false
+  become: true
   vars_files:
     - ../config/images.yml
     - ../config/vault.yml
