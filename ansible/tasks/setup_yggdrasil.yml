@@ -1,0 +1,42 @@
+---
+- name: Create apt keys directory
+  file:
+    path: /usr/local/apt-keys
+    state: directory
+    mode: "0755"
+
+- name: Download GPG key
+  ansible.builtin.get_url:
+    url: https://neilalexander.s3.dualstack.eu-west-2.amazonaws.com/deb/key.txt
+    dest: /tmp/key.asc
+
+- name: Convert GPG key to binary format
+  command: gpg --dearmor -o /usr/local/apt-keys/yggdrasil-keyring.gpg /tmp/key.asc
+  args:
+    creates: /usr/local/apt-keys/yggdrasil-keyring.gpg
+
+- name: Remove temporary key
+  file:
+    path: /tmp/key.asc
+    state: absent
+
+- name: Add Yggdrasil repository
+  copy:
+    dest: /etc/apt/sources.list.d/yggdrasil.list
+    content: "deb [signed-by=/usr/local/apt-keys/yggdrasil-keyring.gpg] http://neilalexander.s3.dualstack.eu-west-2.amazonaws.com/deb/ debian yggdrasil"
+
+- name: Install Yggdrasil package
+  apt:
+    name: yggdrasil
+    state: present
+    update_cache: yes
+
+- name: Add Yggdrasil peer
+  command: "yggdrasilctl addpeer {{ vault_endpoint }}"
+  changed_when: false
+
+- name: Add Yggdrasil hosts entry
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ vault_hosts }}"
+    state: present

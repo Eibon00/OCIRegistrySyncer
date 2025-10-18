@@ -4,7 +4,7 @@
   gather_facts: false
   vars_files:
     - ../config/images.yml
-    - ../ansible/vault.yml
+    - ../config/vault.yml
 
   vars:
     _input_target_registry: "{{ target_registry | default('') }}"
@@ -24,6 +24,11 @@
           - "Target registry: {{ real_target_registry }}"
           - "Auth mode: Basic"
           # - "Vault user: {{ vault_registry_username | default('undefined') }}"
+
+    - name: Install and config Yggdrasil
+      ansible.builtin.debug:
+        msg: "Trying to setup Yggdrasil connectivity..."
+      include_tasks: tasks/setup_yggdrasil.yml
 
     - name: Login to target registry using Basic Auth
       community.docker.docker_login:
