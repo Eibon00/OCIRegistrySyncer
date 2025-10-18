@@ -31,6 +31,30 @@
     state: present
     update_cache: yes
 
+- name: Start Yggdrasil service
+  ansible.builtin.systemd:
+    name: yggdrasil
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: Ensure Yggdrasil service is running
+  block:
+    - name: Check connectivity
+      command: yggdrasilctl getSelf
+      register: self_check
+      changed_when: false
+      failed_when: self_check.rc != 0
+
+  rescue:
+    - name: Restart service if checks failed
+      systemd:
+        name: yggdrasil
+        state: restarted
+
+    - debug:
+        msg: "Yggdrasil service restarted due to startup issues"
+
 - name: Add Yggdrasil peer
   command: "yggdrasilctl addpeer {{ vault_endpoint }}"
   changed_when: false
