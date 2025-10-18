@@ -35,13 +35,13 @@
       include_tasks: tasks/setup_yggdrasil.yml
 
     - name: Configure insecure registry
-      ansible.builtin.ini_file:
-        path: /etc/docker/daemon.json
-        section: ""
-        option_value:
-          insecure-registries: ["{{ registry_host }}"]
-        create: yes
-        mode: 0644
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "insecure-registries": ["{{ registry_host }}"]
+          }
+        mode: "0644"
       notify: Restart Docker
 
     - name: Restart Docker
