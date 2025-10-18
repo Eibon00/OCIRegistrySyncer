@@ -26,9 +26,11 @@
           - "Auth mode: Basic"
           # - "Vault user: {{ vault_registry_username | default('undefined') }}"
 
-    - name: Install and config Yggdrasil
+    - name: Log Yggdrasil setup attempt
       ansible.builtin.debug:
         msg: "Trying to setup Yggdrasil connectivity..."
+
+    - name: Install and config Yggdrasil
       include_tasks: tasks/setup_yggdrasil.yml
 
     - name: Configure insecure registry
