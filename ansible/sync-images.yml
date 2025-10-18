@@ -27,13 +27,14 @@
             | ternary(_input_target_registry, vault_registry_url) 
             | regex_replace('^.+://', '')
           }}
+        registry_is_https: >-
+          {{ (_input_target_registry | default(vault_registry_url)) is search('^https://') }}
 
     - name: Ensure registry vars are loaded
       ansible.builtin.debug:
-        msg:
-          - "Target registry: {{ registry_host }}"
-          - "Auth mode: Basic"
-          # - "Vault user: {{ vault_registry_username | default('undefined') }}"
+        msg: >-
+          Connecting to registry: {{ registry_host }}
+          ({{ 'HTTPS secure mode' if registry_is_https else 'HTTP insecure mode (no login)' }})
 
     - name: Log Yggdrasil setup attempt
       ansible.builtin.debug:
@@ -50,6 +51,7 @@
             "insecure-registries": ["{{ registry_host }}"]
           }
         mode: "0644"
+      when: not registry_is_https
       notify: Restart Docker
 
     - name: Login to target registry using Basic Auth
@@ -58,6 +60,7 @@
         username: "{{ vault_registry_username }}"
         password: "{{ vault_registry_password }}"
         reauthorize: yes
+      when: not registry_is_https
 
     - name: Pull each image from ghcr.io or docker.io
       ansible.builtin.shell: |
