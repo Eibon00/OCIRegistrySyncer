@@ -40,3 +40,7 @@ images:
   - linuxserver/jellyfin
   - ghcr.io/element-hq/element-call:latest-ci
   - louislam/uptime-kuma
+  - powerdns/pdns-auth-50
+  - ghcr.io/poweradmin/poweradmin:latest
+  - acspri/limesurvey
+  - coturn/coturn
