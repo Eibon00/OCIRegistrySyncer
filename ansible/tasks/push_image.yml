@@ -19,7 +19,7 @@
       docker push {{ registry_host }}/{{ image_name }}
     else
       echo "⚠️  Using HTTP (no TLS verify) to push to {{ registry_host }}"
-      DOCKER_TLS_VERIFY=0 docker push {{ registry_host }}/{{ image_name }}
+      docker --tlsverify=false push {{ registry_host }}/{{ image_name }}
     fi
   register: push_result
   retries: 5
