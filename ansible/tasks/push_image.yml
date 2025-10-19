@@ -15,12 +15,7 @@
 
 - name: Push image to target registry
   ansible.builtin.shell: |
-    if [ "{{ registry_is_https }}" = "True" ]; then
-      docker push {{ registry_host }}/{{ image_name }}
-    else
-      echo "⚠️  Using HTTP (no TLS verify) to push to {{ registry_host }}"
-      docker --tlsverify=false push {{ registry_host }}/{{ image_name }}
-    fi
+    docker push {{ registry_host }}/{{ image_name }}
   register: push_result
   retries: 5
   delay: 10

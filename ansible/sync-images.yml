@@ -44,13 +44,10 @@
       include_tasks: tasks/setup_yggdrasil.yml
 
     - name: Configure insecure registry
-      copy:
-        dest: /etc/docker/daemon.json
-        content: |
-          {
-            "insecure-registries": ["{{ registry_host }}"]
-          }
-        mode: "0644"
+      ansible.builtin.shell: |
+        mkdir -p ~/.docker
+        echo '{"insecure-registries": ["{{ registry_host }}"]}' > ~/.docker/config.json
+        echo "Configured insecure registry for user-level Docker client: {{ registry_host }}"
       when: not registry_is_https
       notify: Restart Docker
 
