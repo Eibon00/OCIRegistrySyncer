@@ -54,6 +54,11 @@
       when: not registry_is_https
       notify: Restart Docker
 
+    - name: Debug Docker info
+      run: |
+        docker info | grep -A3 "Insecure Registries" || true
+        cat /etc/docker/daemon.json || true
+
     - name: Login to target registry using Basic Auth
       community.docker.docker_login:
         registry_url: "{{ registry_host }}"
