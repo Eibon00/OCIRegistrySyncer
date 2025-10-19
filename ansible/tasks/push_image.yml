@@ -18,8 +18,8 @@
     if [ "{{ registry_is_https }}" = "True" ]; then
       docker push {{ registry_host }}/{{ image_name }}
     else
-      echo "⚠️  Using HTTP for push: http://{{ registry_host }}/{{ image_name }}"
-      docker push http://{{ registry_host }}/{{ image_name }}
+      echo "⚠️  Using HTTP (no TLS verify) to push to {{ registry_host }}"
+      DOCKER_TLS_VERIFY=0 docker push {{ registry_host }}/{{ image_name }}
     fi
   register: push_result
   retries: 5
