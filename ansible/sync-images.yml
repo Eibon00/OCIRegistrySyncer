@@ -60,7 +60,7 @@
         username: "{{ vault_registry_username }}"
         password: "{{ vault_registry_password }}"
         reauthorize: yes
-      when: not registry_is_https
+      when: registry_is_https
 
     - name: Pull each image from ghcr.io or docker.io
       ansible.builtin.shell: |
