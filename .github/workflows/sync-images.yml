@@ -111,20 +111,6 @@ jobs:
               }
             }
 
-      - name: Setup Docker
-        uses: docker/setup-docker-action@v4
-        with:
-          daemon-config: |
-            {
-              "insecure-registries": [
-                ${{ steps.registry.outputs.is_https == 'true' && '""' || format('"%s"', steps.registry.outputs.registry_host) }}
-              ],
-              "experimental": true,
-              "features": {
-                "buildkit": true
-              }
-            }
-
       - name: Check if DockerHub credentials are set
         id: dockerhub-check
         run: |
