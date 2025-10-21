@@ -32,8 +32,6 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-
       - name: Checkout repo
         uses: actions/checkout@v4
 
@@ -105,7 +103,7 @@ jobs:
           daemon-config: |
             {
               "insecure-registries": [
-                "${{ steps.registry.outputs.registry_host }}"
+                ${{ steps.registry.outputs.registry_host }}
               ],
               "experimental": true,
               "features": {
