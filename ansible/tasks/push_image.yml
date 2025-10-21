@@ -1,26 +1,38 @@
 ---
-- name: pre-processing image names
+- name: Preprocess image name
   ansible.builtin.set_fact:
-    image_name: "{{ image_name | regex_replace('^docker.io/', '') | regex_replace('^ghcr.io/', '') }}"
+    clean_image_name: >-
+      {{
+        image_name
+        | regex_replace('^docker\\.io/', '')
+        | regex_replace('^ghcr\\.io/', '')
+      }}
 
 - name: Tag image for target registry
   ansible.builtin.shell: |
-    docker tag \
-    $(docker images --format '{{"{{.Repository}}:{{.Tag}}"}}' | grep {{ image_name }}) \
-    {{ registry_host }}/{{ image_name }}
+    echo "Tagging image: {{ image_name }} -> {{ registry_host }}/{{ clean_image_name }}"
+    docker tag {{ image_name }} {{ registry_host }}/{{ clean_image_name }}
   register: tag_result
   retries: 3
   delay: 5
   until: tag_result.rc == 0
+  changed_when: true
 
 - name: Push image to target registry
   ansible.builtin.shell: |
-    docker push {{ registry_host }}/{{ image_name }}
+    echo "Pushing image: {{ registry_host }}/{{ clean_image_name }}"
+    docker push {{ registry_host }}/{{ clean_image_name }}
   register: push_result
   retries: 5
   delay: 10
   until: push_result.rc == 0
-# - name: Debug Push result
-#   ansible.builtin.debug:
-#     msg: "Successfully pushed {{ registry_host }}/{{ image_name }}"
-#   when: push_result is succeeded
+  changed_when: true
+
+- name: Show push summary
+  ansible.builtin.debug:
+    msg: |
+      ✅ Successfully pushed: {{ registry_host }}/{{ clean_image_name }}
+      stdout:
+      {{ push_result.stdout }}
+      stderr:
+      {{ push_result.stderr }}

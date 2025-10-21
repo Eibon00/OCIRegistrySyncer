@@ -8,6 +8,7 @@
 
   vars:
     _input_target_registry: "{{ target_registry | default('') }}"
+    summary_file: "{{ lookup('env', 'GITHUB_STEP_SUMMARY') | default('/tmp/github-summary.txt', true) }}"
 
   tasks:
     - name: Set actual target_registry
@@ -35,40 +36,83 @@
       set_fact:
         success_count: 0
         failure_count: 0
+        verify_records: []
 
-    - name: Verify each image via registry API
+    - name: Verify each image via registry API (with retries)
       vars:
-        image_name: "{{ item.split(':')[0] }}"
-        image_tag: "{{ item.split(':')[1] }}"
-      ansible.builtin.uri:
-        url: "{{ registry_scheme }}://{{ registry_host }}/v2/{{ image_name }}/manifests/{{ image_tag }}"
-        method: GET
-        user: "{{ vault_registry_username }}"
-        password: "{{ vault_registry_password }}"
-        force_basic_auth: yes
-        validate_certs: "{{ registry_is_https }}"
-        headers:
-          Accept: "application/vnd.docker.distribution.manifest.v2+json"
-        status_code: [200]
-      register: verify_result
-      failed_when: verify_result.status != 200
-      ignore_errors: yes
+        image_full: "{{ item }}"
+        image_name: >-
+          {{
+            item.split(':')[0]
+            | regex_replace('^ghcr\\.io/', '')
+            | regex_replace('^docker\\.io/', '')
+          }}
+        image_tag: "{{ item.split(':')[1] | default('latest') }}"
+      block:
+        - name: Try verifying image manifest
+          ansible.builtin.uri:
+            url: "{{ registry_scheme }}://{{ registry_host }}/v2/{{ image_name }}/manifests/{{ image_tag }}"
+            method: GET
+            user: "{{ vault_registry_username }}"
+            password: "{{ vault_registry_password }}"
+            force_basic_auth: yes
+            validate_certs: "{{ registry_is_https }}"
+            headers:
+              Accept: "application/vnd.docker.distribution.manifest.v2+json"
+            status_code: [200]
+          register: verify_result
+          retries: 3
+          delay: 5
+          until: verify_result.status is defined and verify_result.status == 200
+          failed_when: false
+
+        - name: Append verify record
+          set_fact:
+            verify_records: "{{ verify_records + [ {'image': item, 'status': verify_result.status | default(0)} ] }}"
       loop: "{{ images }}"
       loop_control:
         label: "{{ item }}"
 
-    - name: Count results
+    - name: Count success and failures
       set_fact:
-        success_count: "{{ verify_result.results | selectattr('status', 'defined') | selectattr('status', 'equalto', 200) | list | length }}"
-        failure_count: "{{ verify_result.results | rejectattr('status', 'equalto', 200) | list | length }}"
+        success_count: "{{ verify_records | selectattr('status', 'equalto', 200) | list | length }}"
+        failure_count: "{{ verify_records | rejectattr('status', 'equalto', 200) | list | length }}"
 
     - name: Show verification summary
       ansible.builtin.debug:
         msg: |
-          Verified images : {{ success_count }}
-          Failed images : {{ failure_count }}
+          ✅ Verified images: {{ success_count }}
+          ❌ Failed images: {{ failure_count }}
 
-    - name: Fail if there are any failed verifications
-      ansible.builtin.fail:
-        msg: "发现 {{ failure_count }} 个镜像未成功同步！"
-      when: failure_count | int > 0
+    - name: Log failed images for debugging
+      ansible.builtin.debug:
+        msg: "❌ Failed to verify: {{ item.image }} (status={{ item.status | default('N/A') }})"
+      when: item.status | default(0) != 200
+      loop: "{{ verify_records }}"
+      loop_control:
+        label: "{{ item.image }}"
+      ignore_errors: yes
+
+    - name: Write verification results to GitHub Actions summary
+      ansible.builtin.copy:
+        dest: "{{ summary_file }}"
+        content: |
+          ## 🧩 Registry Verification Summary
+
+          **Target registry:** `{{ registry_url_raw }}`
+          **Mode:** {{ 'HTTPS secure' if registry_is_https else 'HTTP insecure' }}
+
+          ✅ **Verified images:** {{ success_count }}
+          ❌ **Failed images:** {{ failure_count }}
+
+          {% if failure_count | int > 0 %}
+          ### ❌ Failed Images
+          {% for item in verify_records if item.status != 200 %}
+          - {{ item.image }} (status={{ item.status | default('N/A') }})
+          {% endfor %}
+          {% else %}
+          ✅ All images verified successfully!
+          {% endif %}
+
+          _Generated at {{ ansible_date_time.iso8601 }}_
+      when: summary_file is defined

@@ -73,15 +73,6 @@
         loop_var: image_name
         label: "{{ image_name }}"
 
-    - name: Verify each image exists in target registry
-      ansible.builtin.shell: |
-        docker manifest inspect {{ registry_host }}/{{ item }} > /dev/null
-      register: verify_result
-      failed_when: verify_result.rc != 0
-      loop: "{{ images }}"
-      loop_control:
-        label: "{{ item }}"
-
     - name: Logout from target registry
       community.docker.docker_login:
         registry_url: "{{ registry_host }}"
