@@ -77,20 +77,6 @@ jobs:
           echo "registry_host=$HOST" >> $GITHUB_OUTPUT
           echo "is_https=$IS_HTTPS" >> $GITHUB_OUTPUT
 
-      - name: Setup Docker daemon (conditionally add insecure registry)
-        uses: docker/setup-docker-action@v4
-        with:
-          daemon-config: |
-            {
-              "insecure-registries": [
-                ${{ steps.registry.outputs.is_https == 'true' && '""' || format('"%s"', steps.registry.outputs.registry_host) }}
-              ],
-              "experimental": true,
-              "features": {
-                "buildkit": true
-              }
-            }
-
       - name: Log which registry is configured
         run: |
           echo "Docker is configured for registry: ${{ steps.registry.outputs.final_registry }}"
@@ -99,6 +85,33 @@ jobs:
           else
             echo "⚠️ Insecure HTTP registry detected: ${{ steps.registry.outputs.registry_host }}"
           fi
+
+      - name: Setup Docker (HTTPS mode)
+        if: ${{ steps.registry.outputs.is_https == 'true' }}
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "experimental": true,
+              "features": {
+                "buildkit": true
+              }
+            }
+
+      - name: Setup Docker (HTTP insecure mode)
+        if: ${{ steps.registry.outputs.is_https != 'true' }}
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "insecure-registries": [
+                "${{ steps.registry.outputs.registry_host }}"
+              ],
+              "experimental": true,
+              "features": {
+                "buildkit": true
+              }
+            }
 
       - name: Setup Docker
         uses: docker/setup-docker-action@v4
