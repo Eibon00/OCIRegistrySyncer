@@ -31,8 +31,4 @@
 - name: Show push summary
   ansible.builtin.debug:
     msg: |
-      ✅ Successfully pushed: {{ registry_host }}/{{ clean_image_name }}
-      stdout:
-      {{ push_result.stdout }}
-      stderr:
-      {{ push_result.stderr }}
+      Successfully pushed: {{ registry_host }}/{{ clean_image_name }}

@@ -70,8 +70,9 @@
       include_tasks: tasks/push_image.yml
       loop: "{{ images }}"
       loop_control:
-        loop_var: image_name
         label: "{{ image_name }}"
+      vars:
+        image_name: "{{ item }}"
 
     - name: Logout from target registry
       community.docker.docker_login:
