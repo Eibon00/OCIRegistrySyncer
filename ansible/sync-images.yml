@@ -2,7 +2,6 @@
 - name: Sync container images from ghcr or Docker Hub
   hosts: localhost
   gather_facts: false
-  become: true
   vars_files:
     - ../config/images.yml
     - ../config/vault.yml
@@ -10,22 +9,14 @@
   vars:
     _input_target_registry: "{{ target_registry | default('') }}"
 
-  handlers:
-    - name: Restart Docker
-      ansible.builtin.systemd:
-        name: docker
-        state: restarted
-        enabled: yes
-      when: not ansible_check_mode
-
   tasks:
     - name: Set actual target_registry
       set_fact:
         registry_host: >-
-          {{ 
-            (_input_target_registry | trim) 
-            | ternary(_input_target_registry, vault_registry_url) 
-            | regex_replace('^.+://', '')
+          {{
+            (target_registry is defined and (target_registry | trim | length > 0))
+              | ternary(target_registry, vault_registry_url)
+              | regex_replace('^.+://', '')
           }}
         registry_is_https: >-
           {{ (_input_target_registry | default(vault_registry_url)) is search('^https://') }}
@@ -41,15 +32,8 @@
         msg: "Trying to setup Yggdrasil connectivity..."
 
     - name: Install and config Yggdrasil
+      become: true
       include_tasks: tasks/setup_yggdrasil.yml
-
-    - name: Configure insecure registry
-      ansible.builtin.shell: |
-        mkdir -p ~/.docker
-        echo '{"insecure-registries": ["{{ registry_host }}"]}' > ~/.docker/config.json
-        echo "Configured insecure registry for user-level Docker client: {{ registry_host }}"
-      when: not registry_is_https
-      notify: Restart Docker
 
     - name: Login to target registry using Basic Auth
       community.docker.docker_login:

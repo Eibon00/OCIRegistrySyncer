@@ -2,7 +2,6 @@
 - name: Verify synchronized images in target registry
   hosts: localhost
   gather_facts: no
-  become: true
   vars_files:
     - ../config/vault.yml
     - ../config/images.yml
@@ -13,18 +12,23 @@
   tasks:
     - name: Set actual target_registry
       set_fact:
-        registry_host: >-
-          {{ 
-            (_input_target_registry | trim) 
-            | ternary(_input_target_registry, vault_registry_url) 
-            | regex_replace('^.+://', '')
+        registry_url_raw: >-
+          {{
+            (_input_target_registry is defined and (_input_target_registry | trim | length > 0))
+              | ternary(_input_target_registry, vault_registry_url)
           }}
+        registry_host: "{{ registry_url_raw | regex_replace('^https?://', '') }}"
+        registry_is_https: "{{ registry_url_raw is search('^https://') }}"
+        registry_scheme: "{{ 'https' if registry_is_https else 'http' }}"
 
-    - name: Log Yggdrasil setup attempt
+    - name: Show which registry is being verified
       ansible.builtin.debug:
-        msg: "Trying to setup Yggdrasil connectivity..."
+        msg: >-
+          Verifying registry: {{ registry_url_raw }}
+          (mode: {{ 'HTTPS secure' if registry_is_https else 'HTTP insecure' }})
 
     - name: Install and config Yggdrasil
+      become: true
       include_tasks: tasks/setup_yggdrasil.yml
 
     - name: Initialize counters
@@ -32,17 +36,17 @@
         success_count: 0
         failure_count: 0
 
-    - name: Verify each image via HTTP API (Basic Auth)
+    - name: Verify each image via registry API
       vars:
         image_name: "{{ item.split(':')[0] }}"
         image_tag: "{{ item.split(':')[1] }}"
       ansible.builtin.uri:
-        url: "https://{{ registry_host }}/v2/{{ image_name }}/manifests/{{ image_tag }}"
+        url: "{{ registry_scheme }}://{{ registry_host }}/v2/{{ image_name }}/manifests/{{ image_tag }}"
         method: GET
         user: "{{ vault_registry_username }}"
         password: "{{ vault_registry_password }}"
         force_basic_auth: yes
-        validate_certs: no
+        validate_certs: "{{ registry_is_https }}"
         headers:
           Accept: "application/vnd.docker.distribution.manifest.v2+json"
         status_code: [200]
@@ -61,8 +65,8 @@
     - name: Show verification summary
       ansible.builtin.debug:
         msg: |
-          Succeed images count : {{ success_count }}
-          Failed images count : {{ failure_count }}
+          Verified images : {{ success_count }}
+          Failed images : {{ failure_count }}
 
     - name: Fail if there are any failed verifications
       ansible.builtin.fail:

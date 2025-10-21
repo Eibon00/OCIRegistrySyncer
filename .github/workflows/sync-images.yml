@@ -25,6 +25,8 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   image-sync:
+    outputs:
+      final_registry: ${{ steps.registry.outputs.final_registry }}
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -35,23 +37,82 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Setup Docker
-        uses: docker/setup-docker-action@v4
-        with:
-          daemon-config: |
-            {
-              "experimental": true,
-              "features": {
-                "buildkit": true
-              }
-            }
-
       - name: Setup Ansible
         id: ansible
         uses: rishabhc32/install-ansible@v1.2.2
         with:
           python-version: "3.12"
           ansible-package: "ansible==12.0.0"
+
+      - name: Determine and prepare target registry
+        id: registry
+        shell: bash
+        run: |
+          echo "🔐 Decrypting vault to get default registry..."
+          echo "${{ secrets.ANSIBLE_VAULT_PASSWORD }}" > ~/vault_pass.txt
+          ansible-vault view config/vault.yml --vault-password-file ~/vault_pass.txt > vault_decrypted.yml
+
+          DEFAULT_REGISTRY=$(grep '^vault_registry_url:' vault_decrypted.yml | awk '{print $2}')
+
+          if [[ -n "${{ github.event.inputs.target_registry }}" ]]; then
+            FINAL_REGISTRY="${{ github.event.inputs.target_registry }}"
+            echo "✅ Using user-provided registry: $FINAL_REGISTRY"
+          else
+            FINAL_REGISTRY="$DEFAULT_REGISTRY"
+            echo "ℹ️ No registry provided, falling back to vault default: $FINAL_REGISTRY"
+          fi
+
+          HOST=$(echo "$FINAL_REGISTRY" | sed -E 's#^https?://##; s#^http?://##')
+          echo "🧩 Registry host detected: $HOST"
+
+          if echo "$FINAL_REGISTRY" | grep -q '^https://'; then
+            IS_HTTPS=true
+            echo "🔒 Detected HTTPS registry"
+          else
+            IS_HTTPS=false
+            echo "⚠️ Detected HTTP (insecure) registry"
+          fi
+
+          echo "final_registry=$FINAL_REGISTRY" >> $GITHUB_OUTPUT
+          echo "registry_host=$HOST" >> $GITHUB_OUTPUT
+          echo "is_https=$IS_HTTPS" >> $GITHUB_OUTPUT
+
+      - name: Setup Docker daemon (conditionally add insecure registry)
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "insecure-registries": [
+                ${{ steps.registry.outputs.is_https == 'true' && '""' || format('"%s"', steps.registry.outputs.registry_host) }}
+              ],
+              "experimental": true,
+              "features": {
+                "buildkit": true
+              }
+            }
+
+      - name: Log which registry is configured
+        run: |
+          echo "Docker is configured for registry: ${{ steps.registry.outputs.final_registry }}"
+          if [[ "${{ steps.registry.outputs.is_https }}" == "true" ]]; then
+            echo "✅ Secure HTTPS mode, no insecure registry configured."
+          else
+            echo "⚠️ Insecure HTTP registry detected: ${{ steps.registry.outputs.registry_host }}"
+          fi
+
+      - name: Setup Docker
+        uses: docker/setup-docker-action@v4
+        with:
+          daemon-config: |
+            {
+              "insecure-registries": [
+                ${{ steps.registry.outputs.is_https == 'true' && '""' || format('"%s"', steps.registry.outputs.registry_host) }}
+              ],
+              "experimental": true,
+              "features": {
+                "buildkit": true
+              }
+            }
 
       - name: Check if DockerHub credentials are set
         id: dockerhub-check
@@ -82,8 +143,8 @@ jobs:
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           ansible-playbook -i localhost, -c local ansible/sync-images.yml \
-          -e "target_registry=${{ github.event.inputs.target_registry }}" \
-          --vault-password-file <(echo $ANSIBLE_VAULT_PASSWORD)
+            -e "target_registry=${{ steps.registry.outputs.final_registry }}" \
+            --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD")
 
       - name: Export synced image list
         id: export
@@ -110,5 +171,5 @@ jobs:
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
         run: |
           ansible-playbook ansible/verify-images.yml \
-          -e "target_registry=${{ github.event.inputs.target_registry }}" \
+            -e "target_registry=${{ needs.image-sync.outputs.final_registry }}" \
             --vault-password-file <(echo "$ANSIBLE_VAULT_PASSWORD")
