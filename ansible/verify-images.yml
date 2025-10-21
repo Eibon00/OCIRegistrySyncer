@@ -29,7 +29,7 @@
 
     - name: Install and config Yggdrasil
       become: true
-      include_tasks: tasks/setup_yggdrasil.yml
+      import_tasks: tasks/setup_yggdrasil.yml
 
     - name: Initialize counters
       set_fact:
