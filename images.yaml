@@ -1,0 +1,99 @@
+docker.io:
+  images:
+    nginx:
+      - "latest"
+    alpine:
+      - "latest"
+    registry:
+      - "latest"
+    minio/minio:
+      - "latest"
+    archlinux:
+      - "latest"
+    joxit/docker-registry-ui:
+      - "main"
+    rzrbld/adminio-ui:
+      - "latest"
+    postgres:
+      - "18"
+    matrixdotorg/synapse:
+      - "latest"
+    matrixdotorg/sygnal:
+      - "latest"
+    linuxserver/qbittorrent:
+      - "5.1.2"
+    grafana/grafana:
+      - "latest"
+    prom/prometheus:
+      - "main"
+    jitsi/base:
+      - "stable"
+    jitsi/base-java:
+      - "stable"
+    jitsi/prosody:
+      - "stable"
+    jitsi/jicofo:
+      - "stable"
+    jitsi/jvb:
+      - "stable"
+    jitsi/web:
+      - "stable"
+    jitsi/jigasi:
+      - "stable"
+    jitsi/jibri:
+      - "stable"
+    jitsi/jitsi-multitrack-recorder:
+      - "latest"
+    grafana/loki:
+      - "latest"
+    mlikiowa/napcat-docker:
+      - "latest"
+    binwiederhier/ntfy:
+      - "latest"
+    line/promgen:
+      - "latest"
+    rustdesk/rustdesk-server:
+      - "latest"
+    keycloak/keycloak:
+      - "latest"
+    netbirdio/netbird:
+      - "latest"
+    nixos/nix:
+      - "latest"
+    sigoden/dufs:
+      - "latest"
+    openlistteam/openlist:
+      - "latest"
+    triliumnext/trilium:
+      - "main"
+    linuxserver/jellyfin:
+      - "latest"
+    louislam/uptime-kuma:
+      - "latest"
+    powerdns/pdns-auth-50:
+      - "latest"
+    acspri/limesurvey:
+      - "latest"
+    coturn/coturn:
+      - "latest"
+
+ghcr.io:
+  images:
+    fatedier/frps:
+      - "v0.65.0"
+    bitwarden/self-host:
+      - "latest"
+    element-hq/element-call:
+      - "latest-ci"
+    sillytavern/sillytavern:
+      - "latest"
+
+docker.getoutline.com:
+  images:
+    outlinewiki/outline:
+      - "latest"
+
+docker.gitea.com:
+  images:
+    gitea:
+      - "latest"

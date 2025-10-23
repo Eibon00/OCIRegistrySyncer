@@ -1,0 +1,26 @@
+docker.io:
+  images:
+    nginx:
+      - "latest"
+    alpine:
+      - "latest"
+    registry:
+      - "latest"
+    outlinewiki/outline:
+      - "latest"
+
+ghcr.io:
+  images:
+    fatedier/frps:
+      - "v0.65.0"
+    bitwarden/self-host:
+      - "latest"
+    element-hq/element-call:
+      - "latest-ci"
+    sillytavern/sillytavern:
+      - "latest"
+
+docker.gitea.com:
+  images:
+    gitea:
+      - "latest"
