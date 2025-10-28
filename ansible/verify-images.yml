@@ -44,8 +44,8 @@
         image_name: >-
           {{
             item.split(':')[0]
-            | regex_replace('^ghcr\\.io/', '')
-            | regex_replace('^docker\\.io/', '')
+            | regex_replace('^ghcr.io/', '')
+            | regex_replace('^docker.io/', '')
           }}
         image_tag: "{{ item.split(':')[1] | default('latest') }}"
       block:
