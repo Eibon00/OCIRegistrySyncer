@@ -45,10 +45,14 @@
 
     - name: Pull each image from ghcr.io or docker.io
       ansible.builtin.shell: |
-        if [[ "{{ item }}" == */* ]]; then
+        if [[ "{{ item }}" =~ ^docker\.io/ || "{{ item }}" =~ ^ghcr\.io/ ]]; then
           docker pull {{ item }}
         else
-          docker pull docker.io/{{ item }} || docker pull ghcr.io/{{ item }}
+          if [[ "{{ item }}" == */* && ! "{{ item }}" =~ ^[a-zA-Z0-9.-]+\.io/ ]]; then
+            docker pull docker.io/{{ item }}
+          else
+            docker pull {{ item }}
+          fi
         fi
       loop: "{{ images }}"
       loop_control:
