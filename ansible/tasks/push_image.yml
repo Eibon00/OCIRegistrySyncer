@@ -4,8 +4,8 @@
     clean_image_name: >-
       {{
         image_name
-        | regex_replace('^docker\\.io/', '')
-        | regex_replace('^ghcr\\.io/', '')
+        | regex_replace('^docker.io/', '')
+        | regex_replace('^ghcr.io/', '')
       }}
 
 - name: Tag image for target registry
