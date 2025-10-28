@@ -6,8 +6,6 @@ docker.io:
       - "latest"
     registry:
       - "latest"
-    minio/minio:
-      - "latest"
     archlinux:
       - "latest"
     joxit/docker-registry-ui:
@@ -76,6 +74,8 @@ docker.io:
       - "latest"
     coturn/coturn:
       - "latest"
+    chrislusf/seaweedfs:
+      - "latest"
 
 ghcr.io:
   images:
@@ -96,4 +96,9 @@ docker.getoutline.com:
 docker.gitea.com:
   images:
     gitea:
+      - "latest"
+
+quay.io:
+  images:
+    prometheus/blackbox-exporter:
       - "latest"

@@ -10,9 +10,11 @@ images:
   - postgres:18
   - matrixdotorg/synapse:latest
   - matrixdotorg/sygnal:latest
+  - matrixdotorg/dendrite-monolith:latest
   - linuxserver/qbittorrent:5.1.2
   - ghcr.io/fatedier/frps:v0.65.0
   - grafana/grafana
+  - grafana/loki
   - prom/prometheus:main
   - jitsi/base:stable
   - jitsi/base-java:stable
@@ -23,7 +25,6 @@ images:
   - jitsi/jigasi:stable
   - jitsi/jibri:stable
   - jitsi/jitsi-multitrack-recorder
-  - grafana/loki
   - mlikiowa/napcat-docker:latest
   - binwiederhier/ntfy
   - line/promgen
@@ -44,3 +45,9 @@ images:
   - ghcr.io/poweradmin/poweradmin:latest
   - acspri/limesurvey
   - coturn/coturn
+  - ghcr.io/dani-garcia/vaultwarden:latest
+  - docker.io/chrislusf/seaweedfs:latest
+  - quay.io/prometheus/blackbox-exporter:latest
+  - ghcr.io/etkecc/synapse-admin
+  - discourse/base:release
+  - ghcr.io/thomiceli/opengist:latest
