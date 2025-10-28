@@ -38,37 +38,8 @@
         failure_count: 0
         verify_records: []
 
-    - name: Verify each image via registry API (with retries)
-      vars:
-        image_full: "{{ item }}"
-        image_name: >-
-          {{
-            item.split(':')[0]
-            | regex_replace('^ghcr.io/', '')
-            | regex_replace('^docker.io/', '')
-          }}
-        image_tag: "{{ item.split(':')[1] | default('latest') }}"
-      block:
-        - name: Try verifying image manifest
-          ansible.builtin.uri:
-            url: "{{ registry_scheme }}://{{ registry_host }}/v2/{{ image_name }}/manifests/{{ image_tag }}"
-            method: GET
-            user: "{{ vault_registry_username }}"
-            password: "{{ vault_registry_password }}"
-            force_basic_auth: yes
-            validate_certs: "{{ registry_is_https }}"
-            headers:
-              Accept: "application/vnd.docker.distribution.manifest.v2+json"
-            status_code: [200]
-          register: verify_result
-          retries: 3
-          delay: 5
-          until: verify_result.status is defined and verify_result.status == 200
-          failed_when: false
-
-        - name: Append verify record
-          set_fact:
-            verify_records: "{{ verify_records + [ {'image': item, 'status': verify_result.status | default(0)} ] }}"
+    - name: Verify each image via registry API
+      include_tasks: tasks/verify_image.yml
       loop: "{{ images }}"
       loop_control:
         label: "{{ item }}"
