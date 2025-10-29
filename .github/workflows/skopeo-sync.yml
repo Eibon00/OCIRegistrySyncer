@@ -1,0 +1,32 @@
+name: Skopeo Sync
+
+on:
+  schedule:
+    - cron: "0 16 * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Run skopeo sync pipeline
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure Yggdrasil network
+        env:
+          YGG_ENDPOINT: ${{ secrets.YGG_ENDPOINT }}
+          YGG_HOSTS: ${{ secrets.YGG_HOSTS }}
+        run: |
+          ./install-yggdrasil-configure-network.sh
+
+      - name: Install realscoped skopeo
+        run: |
+          ./install-realscoped-skopeo.sh
+
+      - name: Run skopeo sync
+        env:
+          TARGET_REPO: ${{ secrets.TARGET_REPO }}
+        run: |
+          ./skopeo-sync.sh
