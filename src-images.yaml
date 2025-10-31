@@ -20,8 +20,6 @@ docker.io:
       - "latest"
     matrixdotorg/dendrite-monolith:
       - "latest"
-    linuxserver/qbittorrent:
-      - "5.1.2"
     grafana/grafana:
       - "latest"
     prom/prometheus:
@@ -101,6 +99,13 @@ ghcr.io:
     etkecc/synapse-admin:
       - "latest"
     thomiceli/opengist:
+      - "latest"
+    vuetorrent/vuetorrent-lsio-mod:
+      - "latest"
+
+lscr.io:
+  images:
+    linuxserver/qbittorrent:
       - "latest"
 
 docker.gitea.com:
