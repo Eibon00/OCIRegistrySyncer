@@ -70,8 +70,6 @@ docker.io:
       - "latest"
     powerdns/pdns-auth-50:
       - "latest"
-    acspri/limesurvey:
-      - "latest"
     coturn/coturn:
       - "latest"
     chrislusf/seaweedfs:
