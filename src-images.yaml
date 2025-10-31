@@ -8,6 +8,9 @@ docker.io:
       - "latest"
     archlinux:
       - "latest"
+    mariadb:
+      - "latest"
+      - "lts-ubi9"
     joxit/docker-registry-ui:
       - "main"
     rzrbld/adminio-ui:
