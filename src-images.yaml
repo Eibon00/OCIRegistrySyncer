@@ -83,6 +83,8 @@ docker.io:
       - "latest"
     mattermost/focalboard:
       - "latest"
+    valkey/valkey:
+      - "9.0.0"
 
 ghcr.io:
   images:
