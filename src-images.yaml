@@ -82,6 +82,8 @@ docker.io:
       - "release"
     outlinewiki/outline:
       - "latest"
+    mattermost/focalboard:
+      - "latest"
 
 ghcr.io:
   images:
