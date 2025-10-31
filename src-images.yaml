@@ -102,6 +102,8 @@ ghcr.io:
       - "latest"
     vuetorrent/vuetorrent-lsio-mod:
       - "latest"
+    formbricks/formbricks:
+      - "latest"
 
 lscr.io:
   images:
