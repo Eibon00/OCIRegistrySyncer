@@ -85,6 +85,8 @@ docker.io:
       - "latest"
     valkey/valkey:
       - "9.0.0"
+    pgvector/pgvector:
+      - "pg18"
 
 ghcr.io:
   images:
