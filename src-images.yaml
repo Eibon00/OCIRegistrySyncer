@@ -87,6 +87,8 @@ docker.io:
       - "9.0.0"
     pgvector/pgvector:
       - "pg18"
+    collinwebdesigns/fastapi-dls:
+      - "latest"
 
 ghcr.io:
   images:
