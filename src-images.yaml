@@ -89,6 +89,10 @@ docker.io:
       - "pg18"
     collinwebdesigns/fastapi-dls:
       - "latest"
+    dovecot/dovecot:
+      - "latest"
+    postfixadmin:
+      - "latest"
 
 ghcr.io:
   images:
@@ -107,9 +111,9 @@ ghcr.io:
       - "latest"
     thomiceli/opengist:
       - "latest"
-    vuetorrent/vuetorrent-lsio-mod:
-      - "latest"
     formbricks/formbricks:
+      - "latest"
+    gabe565/linuxserver-mod-vuetorrent:
       - "latest"
 
 lscr.io:
