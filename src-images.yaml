@@ -93,6 +93,8 @@ docker.io:
       - "latest"
     postfixadmin:
       - "latest"
+    qbittorrentofficial/qbittorrent-nox:
+      - "latest"
 
 ghcr.io:
   images:
@@ -112,13 +114,6 @@ ghcr.io:
     thomiceli/opengist:
       - "latest"
     formbricks/formbricks:
-      - "latest"
-    gabe565/linuxserver-mod-vuetorrent:
-      - "latest"
-
-lscr.io:
-  images:
-    linuxserver/qbittorrent:
       - "latest"
 
 docker.gitea.com:
