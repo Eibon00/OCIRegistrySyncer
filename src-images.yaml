@@ -115,6 +115,8 @@ ghcr.io:
       - "latest"
     formbricks/formbricks:
       - "latest"
+    asciinema/asciinema-server:
+      - "latest"
 
 docker.gitea.com:
   images:
