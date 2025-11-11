@@ -98,6 +98,9 @@ docker.io:
     filebrowser/filebrowser:
       - "s6"
       - "latest"
+    livekit/livekit-server:
+      - "master"
+      - "latest"
 ghcr.io:
   images:
     fatedier/frps:
@@ -119,7 +122,9 @@ ghcr.io:
       - "latest"
     asciinema/asciinema-server:
       - "latest"
-
+    element-hq/lk-jwt-service:
+      - "0.3.0"
+      - "latest"
 docker.gitea.com:
   images:
     gitea:
