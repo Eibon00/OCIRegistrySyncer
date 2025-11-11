@@ -71,6 +71,8 @@ docker.io:
       - "latest"
     louislam/uptime-kuma:
       - "latest"
+      - "2"
+      - "base3"
     powerdns/pdns-auth-50:
       - "latest"
     coturn/coturn:
