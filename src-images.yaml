@@ -95,7 +95,9 @@ docker.io:
       - "latest"
     qbittorrentofficial/qbittorrent-nox:
       - "latest"
-
+    filebrowser/filebrowser:
+      - "s6"
+      - "latest"
 ghcr.io:
   images:
     fatedier/frps:
