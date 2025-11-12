@@ -11,6 +11,10 @@ docker.io:
     mariadb:
       - "latest"
       - "lts-ubi9"
+    eclipse-temurin:
+      - "8-jre-ubi9-minimal"
+      - "25-jre-ubi10-minimal"
+      - "21-jre-ubi10-minimal"
     joxit/docker-registry-ui:
       - "main"
     rzrbld/adminio-ui:
