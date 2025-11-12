@@ -72,7 +72,6 @@ docker.io:
     louislam/uptime-kuma:
       - "latest"
       - "2"
-      - "base3"
     powerdns/pdns-auth-50:
       - "latest"
     coturn/coturn:
@@ -102,6 +101,8 @@ docker.io:
       - "latest"
     livekit/livekit-server:
       - "master"
+      - "latest"
+    itzg/minecraft-server:
       - "latest"
 ghcr.io:
   images:
