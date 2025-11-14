@@ -144,3 +144,8 @@ quay.io:
   images:
     prometheus/blackbox-exporter:
       - "latest"
+
+dock.mau.dev:
+  images:
+    maubot/maubot:
+      - "latest"
