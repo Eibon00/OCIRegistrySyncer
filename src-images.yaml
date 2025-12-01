@@ -110,6 +110,8 @@ docker.io:
       - "latest"
     itzg/mc-proxy:
       - "latest"
+    rustfs/rustfs:
+      - "latest"
 ghcr.io:
   images:
     fatedier/frps:
