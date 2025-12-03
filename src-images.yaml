@@ -112,6 +112,8 @@ docker.io:
       - "latest"
     rustfs/rustfs:
       - "latest"
+    coredns/coredns:
+      - "latest"
 ghcr.io:
   images:
     fatedier/frps:
