@@ -114,7 +114,7 @@ docker.io:
       - "latest"
     coredns/coredns:
       - "latest"
-    portainer/portainer-ce
+    portainer/portainer-ce:
       - "latest"
       - "lts"
 ghcr.io:
