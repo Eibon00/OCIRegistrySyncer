@@ -63,6 +63,7 @@ docker.io:
       - "latest"
     netbirdio/netbird:
       - "latest"
+      - "rootless-latest"
     nixos/nix:
       - "latest"
     sigoden/dufs:
@@ -117,9 +118,6 @@ docker.io:
     portainer/portainer-ce:
       - "latest"
       - "lts"
-    netbirdio/netbird:
-      - "rootless-latest"
-      - "latest"
 ghcr.io:
   images:
     fatedier/frps:
