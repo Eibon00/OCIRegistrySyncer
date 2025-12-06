@@ -117,6 +117,9 @@ docker.io:
     portainer/portainer-ce:
       - "latest"
       - "lts"
+    netbirdio/netbird:
+      - "rootless-latest"
+      - "latest"
 ghcr.io:
   images:
     fatedier/frps:
